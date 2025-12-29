@@ -9,6 +9,7 @@ import com.sky.service.SetmealService;
 import com.sky.vo.SetmealVO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.models.auth.In;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -75,6 +76,11 @@ public class SetmealController {
         return Result.success(setmealVO);
     }
 
+    /**
+     * 修改套餐
+     * @param setmealDTO
+     * @return
+     */
     @ApiOperation("修改套餐")
     @PutMapping()
     public Result update(@RequestBody SetmealDTO setmealDTO) {
