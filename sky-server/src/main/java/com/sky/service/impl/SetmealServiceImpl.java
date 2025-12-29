@@ -74,7 +74,7 @@ public class SetmealServiceImpl implements SetmealService {
      * @param ids
      */
     @Transactional
-    public void deleteById(List<Long> ids) {
+    public void deleteBatch(List<Long> ids) {
 
         //如果还在售，就不能删
         for(Long id : ids){
@@ -123,7 +123,7 @@ public class SetmealServiceImpl implements SetmealService {
         List<SetmealDish> setmealDishes = setmealDTO.getSetmealDishes();
         if(setmealDishes != null && setmealDishes.size() > 0){
             setmealDishes.forEach(setmealDish -> {
-                setmealDish.setSetmealId(setmeal.getId());
+                setmealDish.setSetmealId(setmealDTO.getId());
             });
             //再插入 -- 实现修改
             setmealDishMapper.insertBatch(setmealDishes);

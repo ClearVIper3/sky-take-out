@@ -20,6 +20,7 @@ public interface SetmealService {
 
     /**
      * 套餐分页查询
+     * @param setmealPageQueryDTO
      * @return
      */
     PageResult pageQuery(SetmealPageQueryDTO setmealPageQueryDTO);
@@ -28,7 +29,7 @@ public interface SetmealService {
      * 根据id删除套餐数据
      * @param ids
      */
-    void deleteById(List<Long> ids);
+    void deleteBatch(List<Long> ids);
 
     /**
      * 根据id查询套餐信息

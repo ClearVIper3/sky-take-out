@@ -57,7 +57,7 @@ public class SetmealController {
     @DeleteMapping()
     public Result delete(@RequestParam List<Long> ids) {
         log.info("删除套餐:{}",ids);
-        setmealService.deleteById(ids);
+        setmealService.deleteBatch(ids);
         return Result.success();
     }
 
