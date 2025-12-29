@@ -194,7 +194,7 @@ public class DishServiceImpl implements DishService {
      * @param categoryId
      * @return
      */
-    public List<Dish> getByCategoryId(Long categoryId) {
+    public List<Dish> list(Long categoryId) {
         return dishMapper.getByCategoryId(categoryId);
     }
 }
