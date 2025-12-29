@@ -16,7 +16,7 @@ public interface SetmealService {
      * 新增套餐及对应的菜品
      * @param setmealDTO
      */
-    void saveWithDishes(SetmealDTO setmealDTO);
+    void saveWithDish(SetmealDTO setmealDTO);
 
     /**
      * 套餐分页查询
