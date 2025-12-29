@@ -29,10 +29,10 @@
                 and s.name like concat('%',#{name},'%')
             </if>
             <if test="categoryId != null">
-                and d.category_id = #{categoryId}
+                and s.category_id = #{categoryId}
             </if>
             <if test="status != null">
-                and d.status = #{status}
+                and s.status = #{status}
             </if>
         </where>
         order by s.create_time desc

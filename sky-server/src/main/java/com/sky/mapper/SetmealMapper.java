@@ -39,6 +39,8 @@ public interface SetmealMapper {
 
     /**
      * 套餐分页查询
+     * @param setmealPageQueryDTO
+     * @return
      */
     Page<SetmealVO> pageQuery(SetmealPageQueryDTO setmealPageQueryDTO);
 
