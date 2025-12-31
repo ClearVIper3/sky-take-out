@@ -39,6 +39,8 @@ public class UserController {
     @PostMapping("/login")
     @ApiOperation("用户登录")
     public Result<UserLoginVO> login(@RequestBody UserLoginDTO userLoginDTO){
+        //https://developers.weixin.qq.com/miniprogram/dev/framework/open-ability/login.html
+        //前端传过来的code只是临时的认证码，为了标识一个用户，我们需要调用微信官方提供的接口获取用户唯一的openid    code -> openid
         log.info("用户登录:{}",userLoginDTO);
 
         //微信登录
