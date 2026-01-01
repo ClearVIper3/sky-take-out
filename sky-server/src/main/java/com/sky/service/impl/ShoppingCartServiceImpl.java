@@ -9,7 +9,6 @@ import com.sky.mapper.DishMapper;
 import com.sky.mapper.SetmealMapper;
 import com.sky.mapper.ShoppingCartMapper;
 import com.sky.service.ShoppingCartService;
-import com.sky.utils.JwtUtil;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -90,5 +89,30 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
         //获取到当前微信用户的id
         Long userId = BaseContext.getCurrentId();
         shoppingCartMapper.deleteByUserId(userId);
+    }
+
+    /**
+     * 减少购物车
+     * @param shoppingCartDTO
+     */
+    public void subShoppingCart(ShoppingCartDTO shoppingCartDTO) {
+        ShoppingCart shoppingCart = new ShoppingCart();
+        BeanUtils.copyProperties(shoppingCartDTO, shoppingCart);
+        Long userId = BaseContext.getCurrentId();
+        shoppingCart.setUserId(userId);
+
+        List<ShoppingCart> shoppingCarts = shoppingCartMapper.list(shoppingCart);
+
+        if(shoppingCarts != null && shoppingCarts.size() > 0){
+            ShoppingCart cart = shoppingCarts.get(0);
+
+            Integer number = cart.getNumber();
+            if(number == 1){
+                shoppingCartMapper.deleteById(cart.getId());
+            }else {
+                cart.setNumber(cart.getNumber() - 1);
+                shoppingCartMapper.updateNumberById(cart);
+            }
+        }
     }
 }
