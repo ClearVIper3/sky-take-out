@@ -74,14 +74,14 @@ public class OrderController {
     }
 
     /**
-     * 订单查询
+     * 订单详情查询
      * @param id
      * @return
      */
     @GetMapping("orderDetail/{id}")
-    @ApiOperation("订单查询")
+    @ApiOperation("订单详情查询")
     public Result<OrderVO> list(@PathVariable Long id){
-        log.info("订单查询:{}", id);
+        log.info("订单详情查询:{}", id);
         OrderVO orderVO = orderService.getById(id);
         return Result.success(orderVO);
     }

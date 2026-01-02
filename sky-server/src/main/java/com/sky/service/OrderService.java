@@ -43,7 +43,7 @@ public interface OrderService {
     PageResult pageQuery(int pageNum, int pageSize, Integer status);
 
     /**
-     * 用户端订单查询
+     * 用户端订单详情查询
      * @param id
      * @return
      */

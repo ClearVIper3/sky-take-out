@@ -174,7 +174,6 @@ public class OrderServiceImpl implements OrderService {
 
         //补充订单查询所用的DTO参数
         OrdersPageQueryDTO ordersPageQueryDTO = new OrdersPageQueryDTO();
-
         Long userId = BaseContext.getCurrentId();
         ordersPageQueryDTO.setUserId(userId);
         ordersPageQueryDTO.setStatus(status);
@@ -203,7 +202,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     /**
-     * 用户端订单查询
+     * 用户端订单详情查询
      * @param id
      * @return
      */
