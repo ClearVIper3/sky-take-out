@@ -300,6 +300,7 @@ public class OrderServiceImpl implements OrderService {
      * @param ordersPageQueryDTO
      * @return
      */
+    //TODO: 优化方法结构
     public PageResult conditionSearch(OrdersPageQueryDTO ordersPageQueryDTO) {
         PageHelper.startPage(ordersPageQueryDTO.getPage(),ordersPageQueryDTO.getPageSize());
 
@@ -383,15 +384,21 @@ public class OrderServiceImpl implements OrderService {
         Orders orders = Orders.builder()
                 .status(Orders.CANCELLED)
                 .rejectionReason(ordersRejectionDTO.getRejectionReason())
+                .cancelTime(LocalDateTime.now())
                 .id(ordersRejectionDTO.getId())
                 .build();
 
         //订单状态 1待付款 2待接单 3已接单 4派送中 5已完成 6已取消
         if (!ordersDB.getStatus().equals(Orders.TO_BE_CONFIRMED)){
             throw new OrderBusinessException(MessageConstant.ORDER_STATUS_ERROR);
-        }else{
+        }
+
+        //支付状态
+        Integer payStatus = ordersDB.getPayStatus();
+        if (payStatus == Orders.PAID) {
+            //用户已支付，需要退款
             //调用微信支付退款接口
-//            weChatPayUtil.refund(
+            //weChatPayUtil.refund(
 //                    ordersDB.getNumber(),
 //                    ordersDB.getNumber(),
 //                    new BigDecimal(0.01),
@@ -415,9 +422,23 @@ public class OrderServiceImpl implements OrderService {
             throw new OrderBusinessException(MessageConstant.ORDER_NOT_FOUND);
         }
 
+        //支付状态
+        Integer payStatus = ordersDB.getPayStatus();
+        if (payStatus == Orders.PAID) {
+            //用户已支付，需要退款
+            //调用微信支付退款接口
+            //weChatPayUtil.refund(
+//                    ordersDB.getNumber(),
+//                    ordersDB.getNumber(),
+//                    new BigDecimal(0.01),
+//                    new BigDecimal(0.01));
+        }
+
         Orders orders = Orders.builder()
                 .status(Orders.CANCELLED)
                 .cancelReason(ordersCancelDTO.getCancelReason())
+                .cancelTime(LocalDateTime.now())
+                .payStatus(Orders.REFUND)
                 .id(ordersCancelDTO.getId())
                 .build();
 
@@ -433,6 +454,11 @@ public class OrderServiceImpl implements OrderService {
 
         if (ordersDB == null) {
             throw new OrderBusinessException(MessageConstant.ORDER_NOT_FOUND);
+        }
+
+        // 校验订单是否存在，并且状态为3
+        if (!ordersDB.getStatus().equals(Orders.CONFIRMED)) {
+            throw new OrderBusinessException(MessageConstant.ORDER_STATUS_ERROR);
         }
 
         Orders orders = Orders.builder()
@@ -454,9 +480,15 @@ public class OrderServiceImpl implements OrderService {
             throw new OrderBusinessException(MessageConstant.ORDER_NOT_FOUND);
         }
 
+        // 校验订单是否存在，并且状态为4
+        if (!ordersDB.getStatus().equals(Orders.DELIVERY_IN_PROGRESS)) {
+            throw new OrderBusinessException(MessageConstant.ORDER_STATUS_ERROR);
+        }
+
         Orders orders = Orders.builder()
                 .id(id)
                 .status(Orders.COMPLETED)
+                .deliveryTime(LocalDateTime.now())
                 .build();
 
         orderMapper.update(orders);
