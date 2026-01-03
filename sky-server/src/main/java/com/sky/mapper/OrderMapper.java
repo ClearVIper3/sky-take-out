@@ -4,6 +4,7 @@ import com.github.pagehelper.Page;
 import com.sky.dto.OrdersPageQueryDTO;
 import com.sky.entity.Orders;
 import com.sky.entity.User;
+import com.sky.vo.OrderStatisticsVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
 
@@ -50,4 +51,6 @@ public interface OrderMapper {
      * @return
      */
     Page<Orders> conditionQuery(OrdersPageQueryDTO ordersPageQueryDTO);
+
+    OrderStatisticsVO sum();
 }
