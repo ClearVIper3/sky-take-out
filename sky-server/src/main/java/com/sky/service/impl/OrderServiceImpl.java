@@ -5,10 +5,7 @@ import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.sky.constant.MessageConstant;
 import com.sky.context.BaseContext;
-import com.sky.dto.OrdersConfirmDTO;
-import com.sky.dto.OrdersPageQueryDTO;
-import com.sky.dto.OrdersPaymentDTO;
-import com.sky.dto.OrdersSubmitDTO;
+import com.sky.dto.*;
 import com.sky.entity.*;
 import com.sky.exception.AddressBookBusinessException;
 import com.sky.exception.OrderBusinessException;
@@ -345,10 +342,24 @@ public class OrderServiceImpl implements OrderService {
      * 根据id接收订单
      * @param ordersConfirmDTO
      */
-    public void acceptOrderById(OrdersConfirmDTO ordersConfirmDTO) {
+    public void confirmById(OrdersConfirmDTO ordersConfirmDTO) {
         Orders orders = Orders.builder()
                 .status(Orders.CONFIRMED)
                 .id(ordersConfirmDTO.getId())
+                .build();
+
+        orderMapper.update(orders);
+    }
+
+    /**
+     * 根据id拒绝订单
+     * @param ordersRejectionDTO
+     */
+    public void rejectById(OrdersRejectionDTO ordersRejectionDTO) {
+        Orders orders = Orders.builder()
+                .status(Orders.CANCELLED)
+                .rejectionReason(ordersRejectionDTO.getRejectionReason())
+                .id(ordersRejectionDTO.getId())
                 .build();
 
         orderMapper.update(orders);
