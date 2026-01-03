@@ -40,7 +40,7 @@ public interface OrderService {
      * @param status
      * @return
      */
-    PageResult pageQuery(int pageNum, int pageSize, Integer status);
+    PageResult pageQueryUser(int pageNum, int pageSize, Integer status);
 
     /**
      * 用户端订单详情查询
@@ -60,4 +60,11 @@ public interface OrderService {
      * @param id
      */
     void repeatById(Long id);
+
+    /**
+     * 根据条件查询订单
+     * @param ordersPageQueryDTO
+     * @return
+     */
+    PageResult conditionSearch(OrdersPageQueryDTO ordersPageQueryDTO);
 }

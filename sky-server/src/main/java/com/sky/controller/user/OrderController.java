@@ -69,7 +69,7 @@ public class OrderController {
             @RequestParam(required = false) Integer status){
 
         log.info("历史订单查询:{},{},{}", page, pageSize, status);
-        PageResult pageResult = orderService.pageQuery(page,pageSize,status);
+        PageResult pageResult = orderService.pageQueryUser(page,pageSize,status);
         return Result.success(pageResult);
     }
 

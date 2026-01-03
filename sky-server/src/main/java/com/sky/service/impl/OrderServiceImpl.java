@@ -19,13 +19,11 @@ import com.sky.utils.WeChatPayUtil;
 import com.sky.vo.OrderPaymentVO;
 import com.sky.vo.OrderSubmitVO;
 import com.sky.vo.OrderVO;
-import org.aspectj.weaver.ast.Or;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -45,6 +43,10 @@ public class OrderServiceImpl implements OrderService {
     private WeChatPayUtil weChatPayUtil;
     @Autowired
     private UserMapper userMapper;
+    @Autowired
+    private DishMapper dishMapper;
+    @Autowired
+    private SetmealDishMapper setmealDishMapper;
 
     /**
      * 用户下单
@@ -168,7 +170,7 @@ public class OrderServiceImpl implements OrderService {
      * @param status
      * @return
      */
-    public PageResult pageQuery(int pageNum, int pageSize, Integer status) {
+    public PageResult pageQueryUser(int pageNum, int pageSize, Integer status) {
         //设置分页
         PageHelper.startPage(pageNum,pageSize);
 
@@ -285,5 +287,47 @@ public class OrderServiceImpl implements OrderService {
                 shoppingCartMapper.insert(shoppingCart);
             }
         }
+    }
+
+    /**
+     * 根据条件查询订单
+     * @param ordersPageQueryDTO
+     * @return
+     */
+    public PageResult conditionSearch(OrdersPageQueryDTO ordersPageQueryDTO) {
+        PageHelper.startPage(ordersPageQueryDTO.getPage(),ordersPageQueryDTO.getPageSize());
+
+        Page<Orders> page = orderMapper.conditionQuery(ordersPageQueryDTO);
+
+        List<OrderVO> list = new ArrayList<>();
+        if(page != null && page.getTotal() > 0) {
+            for(Orders orders : page.getResult()) {
+                OrderVO orderVO = new OrderVO();
+
+                List<OrderDetail> orderDetails = orderDetailMapper.getByOrderId(orders.getId());
+
+                List<String> dishes = new ArrayList<>();
+                if(orderDetails != null && orderDetails.size() > 0){
+                    for(OrderDetail orderDetail : orderDetails){
+                        if(orderDetail.getDishId() != null){
+                            dishes.add(orderDetail.getName());
+                        }else {
+                            List<SetmealDish> sds = setmealDishMapper.getBySetmealId(orderDetail.getSetmealId());
+                            if(sds != null && sds.size() > 0){
+                                for(SetmealDish setmealDish : sds){
+                                    dishes.add(setmealDish.getName());
+                                }
+                            }
+                        }
+                    }
+                }
+
+                BeanUtils.copyProperties(orders,orderVO);
+                orderVO.setOrderDishes(String.valueOf(dishes));
+
+                list.add(orderVO);
+            }
+        }
+        return new PageResult(page.getTotal(), list);
     }
 }
