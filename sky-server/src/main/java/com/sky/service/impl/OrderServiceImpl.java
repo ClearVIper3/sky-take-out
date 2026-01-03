@@ -364,4 +364,18 @@ public class OrderServiceImpl implements OrderService {
 
         orderMapper.update(orders);
     }
+
+    /**
+     * 商家端取消订单
+     * @param ordersCancelDTO
+     */
+    public void cancelByIdAdmin(OrdersCancelDTO ordersCancelDTO) {
+        Orders orders = Orders.builder()
+                .status(Orders.CANCELLED)
+                .cancelReason(ordersCancelDTO.getCancelReason())
+                .id(ordersCancelDTO.getId())
+                .build();
+
+        orderMapper.update(orders);
+    }
 }
