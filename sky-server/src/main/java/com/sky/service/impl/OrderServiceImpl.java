@@ -257,4 +257,33 @@ public class OrderServiceImpl implements OrderService {
         orders.setCancelTime(LocalDateTime.now());
         orderMapper.update(orders);
     }
+
+    /**
+     * 根据id再来一单
+     * @param id
+     */
+    public void repeatById(Long id){
+        List<OrderDetail> orderDetails = orderDetailMapper.getByOrderId(id);
+
+        Long userId = BaseContext.getCurrentId();
+        if(orderDetails != null && orderDetails.size() > 0){
+            for(OrderDetail orderDetail : orderDetails){
+                ShoppingCart shoppingCart = ShoppingCart.builder()
+                        .userId(userId)
+                        .name(orderDetail.getName())
+                        .number(orderDetail.getNumber())
+                        .amount(orderDetail.getAmount())
+                        .image(orderDetail.getImage())
+                        .createTime(LocalDateTime.now())
+                        .build();
+                if(orderDetail.getSetmealId() != null){
+                    shoppingCart.setSetmealId(orderDetail.getSetmealId());
+                }else{
+                    shoppingCart.setDishId(orderDetail.getDishId());
+                    shoppingCart.setDishFlavor(orderDetail.getDishFlavor());
+                }
+                shoppingCartMapper.insert(shoppingCart);
+            }
+        }
+    }
 }
