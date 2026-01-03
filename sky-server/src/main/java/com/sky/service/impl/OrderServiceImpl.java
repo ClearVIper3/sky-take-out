@@ -26,6 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class OrderServiceImpl implements OrderService {
@@ -263,29 +264,35 @@ public class OrderServiceImpl implements OrderService {
      * 根据id再来一单
      * @param id
      */
-    public void repeatById(Long id){
-        List<OrderDetail> orderDetails = orderDetailMapper.getByOrderId(id);
-
+    public void repeatById(Long id) {
         Long userId = BaseContext.getCurrentId();
-        if(orderDetails != null && orderDetails.size() > 0){
-            for(OrderDetail orderDetail : orderDetails){
-                ShoppingCart shoppingCart = ShoppingCart.builder()
-                        .userId(userId)
-                        .name(orderDetail.getName())
-                        .number(orderDetail.getNumber())
-                        .amount(orderDetail.getAmount())
-                        .image(orderDetail.getImage())
-                        .createTime(LocalDateTime.now())
-                        .build();
-                if(orderDetail.getSetmealId() != null){
-                    shoppingCart.setSetmealId(orderDetail.getSetmealId());
-                }else{
-                    shoppingCart.setDishId(orderDetail.getDishId());
-                    shoppingCart.setDishFlavor(orderDetail.getDishFlavor());
-                }
-                shoppingCartMapper.insert(shoppingCart);
-            }
-        }
+        List<OrderDetail> orderDetailList = orderDetailMapper.getByOrderId(id);
+
+        List<ShoppingCart> shoppingCartList = orderDetailList.stream()
+                .map(orderDetail -> {
+                    ShoppingCart shoppingCart = ShoppingCart.builder()
+                            .userId(userId)
+                            .name(orderDetail.getName())
+                            .number(orderDetail.getNumber())
+                            .amount(orderDetail.getAmount())
+                            .image(orderDetail.getImage())
+                            .createTime(LocalDateTime.now())
+                            .build();
+
+                    // 区分菜品和套餐
+                    if (orderDetail.getSetmealId() != null) {
+                        shoppingCart.setSetmealId(orderDetail.getSetmealId());
+                    } else {
+                        shoppingCart.setDishId(orderDetail.getDishId());
+                        shoppingCart.setDishFlavor(orderDetail.getDishFlavor());
+                    }
+
+                    return shoppingCart;
+                })
+                .collect(Collectors.toList());
+
+        // 批量插入
+        shoppingCartMapper.insertBatch(shoppingCartList);
     }
 
     /**
