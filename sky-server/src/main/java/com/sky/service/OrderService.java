@@ -96,4 +96,10 @@ public interface OrderService {
      * @param id
      */
     void deliveryById(Long id);
+
+    /**
+     * 根据id完成订单
+     * @param id
+     */
+    void completeById(Long id);
 }
