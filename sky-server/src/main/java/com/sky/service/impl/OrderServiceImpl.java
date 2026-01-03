@@ -343,6 +343,17 @@ public class OrderServiceImpl implements OrderService {
      * @param ordersConfirmDTO
      */
     public void confirmById(OrdersConfirmDTO ordersConfirmDTO) {
+        Orders ordersDB = orderMapper.getById(ordersConfirmDTO.getId());
+
+        if (ordersDB == null) {
+            throw new OrderBusinessException(MessageConstant.ORDER_NOT_FOUND);
+        }
+
+        //订单状态 1待付款 2待接单 3已接单 4派送中 5已完成 6已取消
+        if (!ordersDB.getStatus().equals(Orders.TO_BE_CONFIRMED)){
+            throw new OrderBusinessException(MessageConstant.ORDER_STATUS_ERROR);
+        }
+
         Orders orders = Orders.builder()
                 .status(Orders.CONFIRMED)
                 .id(ordersConfirmDTO.getId())
@@ -356,11 +367,32 @@ public class OrderServiceImpl implements OrderService {
      * @param ordersRejectionDTO
      */
     public void rejectById(OrdersRejectionDTO ordersRejectionDTO) {
+        Orders ordersDB = orderMapper.getById(ordersRejectionDTO.getId());
+
+        if (ordersDB == null) {
+            throw new OrderBusinessException(MessageConstant.ORDER_NOT_FOUND);
+        }
+
         Orders orders = Orders.builder()
                 .status(Orders.CANCELLED)
                 .rejectionReason(ordersRejectionDTO.getRejectionReason())
                 .id(ordersRejectionDTO.getId())
                 .build();
+
+        //订单状态 1待付款 2待接单 3已接单 4派送中 5已完成 6已取消
+        if (!ordersDB.getStatus().equals(Orders.TO_BE_CONFIRMED)){
+            throw new OrderBusinessException(MessageConstant.ORDER_STATUS_ERROR);
+        }else{
+            //调用微信支付退款接口
+//            weChatPayUtil.refund(
+//                    ordersDB.getNumber(),
+//                    ordersDB.getNumber(),
+//                    new BigDecimal(0.01),
+//                    new BigDecimal(0.01));
+
+            //支付状态修改为 退款
+            orders.setPayStatus(Orders.REFUND);
+        }
 
         orderMapper.update(orders);
     }
@@ -370,6 +402,12 @@ public class OrderServiceImpl implements OrderService {
      * @param ordersCancelDTO
      */
     public void cancelByIdAdmin(OrdersCancelDTO ordersCancelDTO) {
+        Orders ordersDB = orderMapper.getById(ordersCancelDTO.getId());
+
+        if (ordersDB == null) {
+            throw new OrderBusinessException(MessageConstant.ORDER_NOT_FOUND);
+        }
+
         Orders orders = Orders.builder()
                 .status(Orders.CANCELLED)
                 .cancelReason(ordersCancelDTO.getCancelReason())
