@@ -5,6 +5,7 @@ import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.sky.constant.MessageConstant;
 import com.sky.context.BaseContext;
+import com.sky.dto.OrdersConfirmDTO;
 import com.sky.dto.OrdersPageQueryDTO;
 import com.sky.dto.OrdersPaymentDTO;
 import com.sky.dto.OrdersSubmitDTO;
@@ -338,5 +339,18 @@ public class OrderServiceImpl implements OrderService {
      */
     public OrderStatisticsVO getOrderStatistics() {
         return orderMapper.sum();
+    }
+
+    /**
+     * 根据id接收订单
+     * @param ordersConfirmDTO
+     */
+    public void acceptOrderById(OrdersConfirmDTO ordersConfirmDTO) {
+        Orders orders = Orders.builder()
+                .status(Orders.CONFIRMED)
+                .id(ordersConfirmDTO.getId())
+                .build();
+
+        orderMapper.update(orders);
     }
 }
